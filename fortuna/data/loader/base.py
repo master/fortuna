@@ -51,6 +51,17 @@ class BaseDataLoaderABC(abc.ABC):
             c += inputs.shape[0]
         return c
 
+    def __len__(self) -> int:
+        """
+        The number of batches in the data loader.
+
+        Returns
+        -------
+        int
+            Number of batches.
+        """
+        return sum(1 for _ in self)
+
     @abc.abstractmethod
     def to_inputs_loader(self) -> BaseInputsLoader:
         """
@@ -241,6 +252,17 @@ class BaseInputsLoader:
             c += inputs.shape[0]
         return c
 
+    def __len__(self) -> int:
+        """
+        The number of batches in the inputs loader.
+
+        Returns
+        -------
+        int
+            Number of batches.
+        """
+        return sum(1 for _ in self)
+
     @classmethod
     def from_data_loader(cls: Type[T], data_loader: BaseDataLoaderABC) -> T:
         """
@@ -353,6 +375,17 @@ class BaseTargetsLoader:
         for targets in self:
             c += targets.shape[0]
         return c
+
+    def __len__(self) -> int:
+        """
+        The number of batches in the targets loader.
+
+        Returns
+        -------
+        int
+            Number of batches.
+        """
+        return sum(1 for _ in self)
 
     @classmethod
     def from_data_loader(cls: Type[T], data_loader: BaseDataLoaderABC) -> T:
