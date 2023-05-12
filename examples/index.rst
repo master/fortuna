@@ -21,4 +21,3 @@ In this section we show some examples of how to use Fortuna in classification an
    scaling_up_bayesian_inference
    mnist_classification_sghmc
    sgmcmc_diagnostics
-   cyclical_sgmcmc
