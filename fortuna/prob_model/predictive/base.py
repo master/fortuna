@@ -226,6 +226,7 @@ class Predictive(WithRNG):
                 )
             )
 
+        ### or just set ensemble_outputs to None??
         if ensemble_outputs is None:
             if rng is None:
                 rng = self.rng.get()

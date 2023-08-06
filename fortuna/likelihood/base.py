@@ -205,6 +205,9 @@ class Likelihood(WithRNG):
                 training, that variable will be updated during the forward pass."""
             )
 
+        # import jax
+        # jax.debug.print("!!!!!!! likelih params {x}", x=params)
+
         inputs, targets = batch
         if outputs is None:
             outs = self.model_manager.apply(
@@ -219,6 +222,8 @@ class Likelihood(WithRNG):
                 mutable = aux["mutable"]
             else:
                 outputs = outs
+        else:
+            raise RuntimeError
 
         aux = dict()
         if self.output_calib_manager is not None:

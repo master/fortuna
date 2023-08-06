@@ -45,7 +45,7 @@ class ProbModelOutputCalibrator(OutputCalibratorABC):
             batch,
             n_data=n_data,
             return_aux=["outputs", "calib_mutable"],
-            ensemble_outputs=outputs,
+            ensemble_outputs=None, # outputs, ## disable!
             calib_params=params,
             calib_mutable=mutable,
             rng=rng,
@@ -73,7 +73,7 @@ class ProbModelOutputCalibrator(OutputCalibratorABC):
             batch,
             n_data=n_data,
             return_aux=["outputs"],
-            ensemble_outputs=outputs,
+            ensemble_outputs=None, #outputs, ## disable!
             calib_params=state.params,
             calib_mutable=state.mutable,
             rng=rng,

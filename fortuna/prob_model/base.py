@@ -188,8 +188,19 @@ class ProbModel(abc.ABC):
             if calib_config.checkpointer.restore_checkpoint_path is None:
                 calib_dict = self.posterior.state.extract_calib_keys()
 
+                from flax.core import FrozenDict
+
+                ### calibrate the bias
+                p = {"params": {"bias": self.posterior.state.get().params.unfreeze()["model"]["params"]["output_subnet"]["Dense_0"]["bias"]}}
+                params = FrozenDict({'output_calibrator': p})
+
+                # p = self.output_calib_manager.init(2).unfreeze()
+                # params = FrozenDict({'output_calibrator': p})
+                print(params)
+                # print(0/0)
+
                 state = OutputCalibState.init(
-                    params=calib_dict["calib_params"],
+                    params=params, #calib_dict["calib_params"],
                     mutable=calib_dict["calib_mutable"],
                     optimizer=calib_config.optimizer.method,
                 )
@@ -213,6 +224,8 @@ class ProbModel(abc.ABC):
                 val_dataset_size=val_size,
                 verbose=calib_config.monitor.verbose,
             )
+
+            print("calib results", state)
 
             self.posterior.state.update(
                 variables=dict(calib_params=state.params, calib_mutable=state.mutable)

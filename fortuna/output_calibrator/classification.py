@@ -1,3 +1,4 @@
+import jax
 import flax.linen as nn
 import jax.numpy as jnp
 
@@ -13,5 +14,6 @@ class ClassificationTemperatureScaler(nn.Module):
 
     @nn.compact
     def __call__(self, x: Array, **kwargs) -> jnp.ndarray:
-        log_temp = self.param("log_temp", nn.initializers.zeros, (1,))
+        # jax.debug.print("temp scaler: {x}", x=x)
+        log_temp = 0. #self.param("log_temp", nn.initializers.zeros, (1,))
         return x * jnp.exp(-log_temp)

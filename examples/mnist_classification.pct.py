@@ -61,13 +61,14 @@ test_data_loader = DataLoader.from_tensorflow_data_loader(test_data_loader)
 # Let us build a probabilistic classifier. This is an interface object containing several attributes that you can configure, i.e. `model`, `prior`, `posterior_approximator`, `output_calibrator`. In this example, we use a LeNet5 model, a Laplace posterior approximator acting on the last layer on the model, and the default temperature scaling output calibrator.
 
 # %%
-from fortuna.prob_model import ProbClassifier, LaplacePosteriorApproximator
+from fortuna.prob_model import ProbClassifier, LaplacePosteriorApproximator, MAPPosteriorApproximator
 from fortuna.model import LeNet5
 
+print("training")
 output_dim = 10
 prob_model = ProbClassifier(
     model=LeNet5(output_dim=output_dim),
-    posterior_approximator=LaplacePosteriorApproximator(),
+    posterior_approximator=MAPPosteriorApproximator(),
 )
 
 
@@ -85,24 +86,44 @@ from fortuna.prob_model import (
 )
 from fortuna.metric.classification import accuracy
 
-status = prob_model.train(
-    train_data_loader=train_data_loader,
-    val_data_loader=val_data_loader,
-    calib_data_loader=val_data_loader,
-    fit_config=FitConfig(
-        optimizer=FitOptimizer(
-            freeze_fun=lambda path, val: "trainable"
-            if "output_subnet" in path
-            else "frozen"
-        )
-    ),
-    map_fit_config=FitConfig(
-        monitor=FitMonitor(early_stopping_patience=2, metrics=(accuracy,)),
-        optimizer=FitOptimizer(),
-    ),
-    calib_config=CalibConfig(monitor=CalibMonitor(early_stopping_patience=2)),
+from fortuna.prob_model import (
+    CalibConfig,
+    CalibOptimizer,
+    CalibProcessor,
 )
 
+# status = prob_model.train(
+#     train_data_loader=train_data_loader,
+#     val_data_loader=val_data_loader,
+#     # calib_data_loader=val_data_loader,
+#     fit_config=FitConfig(
+#         optimizer=FitOptimizer(
+#             freeze_fun=lambda path, val: "trainable"
+#             if "output_subnet" in path
+#             else "frozen",
+#             n_epochs=2,
+#         )
+#     ),
+#     map_fit_config=FitConfig(
+#         monitor=FitMonitor(early_stopping_patience=2, metrics=(accuracy,)),
+#         optimizer=FitOptimizer(),
+#     ),
+#     # calib_config=CalibConfig(monitor=CalibMonitor(early_stopping_patience=2)),
+# )
+
+# prob_model.save_state("123")
+prob_model.load_state("123")
+
+status_calib = prob_model.calibrate(
+    calib_data_loader=val_data_loader,
+    val_data_loader=val_data_loader,
+    calib_config=CalibConfig(
+        optimizer=CalibOptimizer(n_epochs=2),
+        processor=CalibProcessor(n_posterior_samples=1),
+    ),
+)
+
+print(0/0)
 
 # %% [markdown]
 # ### Estimate predictive statistics

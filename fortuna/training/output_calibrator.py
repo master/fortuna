@@ -250,6 +250,13 @@ class OutputCalibratorABC(
             has_aux=True,
         )
         (loss, aux), grad = grad_fn(state.params)
+        # print(">>>>> calibrator loss fn", loss_fun)
+        import jax
+        jax.debug.print(">>>>> calibrator params {x}", x=state.params)
+        # jax.debug.print(">>>>> calibrator batch {x}", x=batch)
+        jax.debug.print(">>>>> calibrator grad {x}", x=grad)
+        # jax.debug.print(">>>>> calibrator outputs {x}", x=outputs)
+
         grad, loss = self.sync_gradients_and_loss(grad, loss)
 
         state = state.apply_gradients(grads=grad, mutable=aux["mutable"])
